@@ -6,5 +6,5 @@ Felix stinkt nicht doch
 - Player Collision
 - Parallax Background
 - Fill Background with solid color below line
-- Player Controls + Player Phyics
+- Player Controls + Player Physics
 - Revamp Terrain Generation (Scripted Events?)
