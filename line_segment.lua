@@ -25,27 +25,30 @@ local function func(x)
     return result * 50
 end
 
-
 Segment.create = function(v2start,width)
 	local seg = {}
     
     seg.width = width
     seg.start = Vec2.copy(v2start)
-    seg.limit = Vec2.create(seg.start.x + seg.width,0)
-
+    seg.limit = Vec2.create(seg.start.x + seg.width,func(seg.start.x + seg.width))
+    seg.points = {}
     print("Start: " .. seg.start.x .. ", " .. seg.start.y)
     print("Limit: " .. seg.limit.x .. ", " .. seg.limit.y)
 
+    local iter = 0
+
+    table.insert(seg.points,Vec2.copy(seg.start))
+
+    while(iter < seg.width) do
+        table.insert(seg.points,Vec2.create(seg.start.x + iter,func(seg.start.x + iter)));
+        iter = iter + RESOLUTION
+    end
+
+    table.insert(seg.points,Vec2.copy(seg.limit))
+
     function seg:draw()
-        local iter = 0
-        local last = Vec2.copy(self.start)
-        while(iter < self.width) do
-            curr = Vec2.create(self.start.x + iter,self.start.y + func(last.x + iter))
-
-            love.graphics.line(last.x,last.y,curr.x,curr.y)
-
-            iter = iter + RESOLUTION
-            last = curr
+        for i=1,#self.points-1 do
+            love.graphics.line(self.points[i].x,self.points[i].y,self.points[i+1].x,self.points[i+1].y)
         end
     end
 

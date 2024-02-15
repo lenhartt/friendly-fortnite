@@ -44,11 +44,13 @@ function love.draw()
 
 	love.graphics.setColor(1,1,1,1)
 
-	for i,seg in ipairs(seg_list) do
-		if (seg.limit.x > camera.x and seg.start.x < camera.x + love.graphics.getWidth()) then
-			seg:draw()
-		end
-	end
+	local screenWidth, screenHeight = love.graphics.getWidth(), love.graphics.getHeight()
 
+    for i, seg in ipairs(seg_list) do
+        if (seg.limit.x > camera.x - (seg.limit.x - seg.start.x) * camera.scaleX and
+            seg.start.x < camera.x + screenWidth * camera.scaleX) then
+            seg:draw()
+        end
+    end
 	camera.unset()
 end
