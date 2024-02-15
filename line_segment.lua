@@ -32,6 +32,7 @@ Segment.create = function(v2start,width)
     seg.start = Vec2.copy(v2start)
     seg.limit = Vec2.create(seg.start.x + seg.width,func(seg.start.x + seg.width))
     seg.points = {}
+    
     print("Start: " .. seg.start.x .. ", " .. seg.start.y)
     print("Limit: " .. seg.limit.x .. ", " .. seg.limit.y)
 

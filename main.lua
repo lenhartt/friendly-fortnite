@@ -3,6 +3,7 @@ local Vec2 = require("vec2")
 local Segment = require("line_segment")
 local camera = require("camera")
 local player = require("player")
+local Collider = require("collider")
 local seg_list = {}
 
 function love.load()
@@ -10,12 +11,14 @@ function love.load()
 	local seg = {};
 	seg.limit = Vec2.create(0,0)
 
-	for i=1,100 do
+	for i=1,2 do
 		seg = Segment.create(seg.limit,100)
 		table.insert(seg_list,seg)
+		Collider.addObj(seg,Collider.ObjType.static)
 	end
-	
 
+	Collider.addObj(player,Collider.ObjType.dynamic)
+	
 	camera.move(-400,-300)
 end
 
@@ -28,9 +31,22 @@ end
 function love.wheelmoved(x, y)
 	local sx,sy = love.graphics.getDimensions()
     camera.scale(-y / 100,-y / 100)
+
+    x = x *100
+
+	camera.move(-x * camera.scaleX,0)
 end
 
 function love.update(dt)
+	player.controls()
+	player.update(dt)
+
+	local manifest = Collider.process()
+	if #manifest ~= 0 then
+		print("Collision!")
+	else
+		-- no collisions were detected
+	end 
 
 end
 
