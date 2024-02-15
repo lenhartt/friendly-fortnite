@@ -1,5 +1,6 @@
 local player = {}
 
+<<<<<<< HEAD
 player.x = 20
 player.y = -10
 player.radius = 5
@@ -33,6 +34,20 @@ function player.controls()
     force.x = force.x + (love.keyboard.isDown("d") and player.speed.x or 0)
 
     player.apply_force(force.x,force.y)
+=======
+function player.physics()
+    local grav = 5
+    local vel = 3
+
+end
+
+
+function player.draw()
+    player.x, player.y = 10, -10
+    player.radius = 5
+    
+    love.graphics.circle("fill", player.x, player.y, player.radius)
+>>>>>>> f30561890b7d6959616055ddc1b714128567db01
 end
 
 return player
