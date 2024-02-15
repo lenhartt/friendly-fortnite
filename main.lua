@@ -2,7 +2,7 @@
 local Vec2 = require("vec2")
 local Segment = require("line_segment")
 local camera = require("camera")
-
+local player = require("player")
 local seg_list = {}
 
 function love.load()
@@ -37,7 +37,7 @@ end
 function love.draw()
 	camera.set()
 
-
+	player.draw()
 	love.graphics.setColor(0.5,0.5,0.5,1)
 	love.graphics.line(-1000,0,1000,0)
 	love.graphics.line(0,-1000,0,1000)
