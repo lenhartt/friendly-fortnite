@@ -25,4 +25,9 @@ Vec2.create = function(x,y)
 	return vec
 end
 
+Vec2.copy = function(v)
+	local ret = Vec2.create(v.x,v.y)
+	return ret
+end
+
 return Vec2
