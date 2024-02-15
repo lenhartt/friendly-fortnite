@@ -1,3 +1,3 @@
 # friendly-fortnite
 Benjamin, Lennart, Felix
-Felix stinktnicht doch
+Felix stinkt nicht doch
