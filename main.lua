@@ -12,7 +12,7 @@ function love.load()
 	seg.limit = Vec2.create(0,0)
 
 	for i=1,2 do
-		seg = Segment.create(seg.limit,100)
+		seg = Segment.create(seg.limit,400)
 		table.insert(seg_list,seg)
 		Collider.addObj(seg,Collider.ObjType.static)
 	end
@@ -39,11 +39,12 @@ end
 
 function love.update(dt)
 	player.controls()
+	player.apply_force(0,20) --gravity
 	player.update(dt)
 
 	local manifest = Collider.process()
 	if #manifest ~= 0 then
-		print("Collision!")
+		Collider.resolve(manifest)
 	else
 		-- no collisions were detected
 	end 

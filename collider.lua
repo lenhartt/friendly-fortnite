@@ -57,19 +57,19 @@ function circleLineIntersect(cx, cy, r, x1, y1, x2, y2)
     if distance <= r then
         -- TODO: Calculate the collision normal
         -- Return the collision normal
-        return true, {x = (cx - closestX) / distance, y = (cy - closestY) / distance}
+        return true, {x = (cx - closestX) / distance, y = (cy - closestY) / distance}, r - distance
     end
 
-    return false, nil  -- No intersection
+    return false, nil, 0  -- No intersection
 end
 
 function narrow_phase(A,B)
 	local manifest = {}
 	if A.type == Collider.ObjType.dynamic and B.type == Collider.ObjType.static then
 		for i=1,#B.data.points-1 do
-			local inter, normal = circleLineIntersect(A.data.x,A.data.y,A.data.radius,B.data.points[i].x,B.data.points[i].y,B.data.points[i+1].x,B.data.points[i+1].y)
+			local inter, normal, depth = circleLineIntersect(A.data.x,A.data.y,A.data.radius,B.data.points[i].x,B.data.points[i].y,B.data.points[i+1].x,B.data.points[i+1].y)
 			if inter then
-				local pair = {dyn = A, stat = { orig = B, seg = i }, normal = normal}
+				local pair = {A = A, B = { orig = B, seg = i }, normal = normal, pendepth =  depth}
 				table.insert(manifest,pair)
 			end
 		end
@@ -98,6 +98,25 @@ Collider.process = function()
 		end
 	end
 	return manifest
+end
+
+Collider.resolve = function(manifest)
+	for i,col in ipairs(manifest) do
+		print(i .. ": normal = x: " .. col.normal.x .. "; y: " .. col.normal.y)
+
+		if col.A.type == Collider.ObjType.dynamic and col.B.orig ~= nil and col.B.orig.type == Collider.ObjType.static then
+			local damp = 0.6
+			local slop = 0.001
+			local correction = {}
+
+		    correction.x = math.min(col.pendepth + slop, 0.0) / 2 * damp * col.normal.x;
+		    correction.y = math.min(col.pendepth + slop, 0.0) / 2 * damp * col.normal.y;
+
+			col.A.data.apply_force(col.normal.x * damp * col.pendepth,col.normal.y * damp * col.pendepth)
+			col.A.data.x = col.A.data.x - correction.x
+			col.A.data.y = col.A.data.y - correction.y
+		end
+	end
 end
 
 return Collider

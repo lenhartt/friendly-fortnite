@@ -2,8 +2,11 @@
 local Vec2 = require("vec2")
 local Segment = {}
 local RESOLUTION = 0.1
+local SCALE = 0.25
 
 local function func(x)
+
+    x = x * SCALE
     -- Frequencies
     local f0, f1, f2, f3 = 1.75, 2.96, 6.23, 8.07
 
@@ -22,7 +25,7 @@ local function func(x)
                    a2 * math.sin(f2 * (k * x + o2)) +
                    a3 * math.sin(f3 * (k * x + o3))
 
-    return result * 50
+    return result * 50 / SCALE
 end
 
 Segment.create = function(v2start,width)

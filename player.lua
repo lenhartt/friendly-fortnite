@@ -1,10 +1,10 @@
 local player = {}
 
-player.x = 20
-player.y = -10
+player.x = 200
+player.y = -100
 player.radius = 5
 
-player.speed = { x = 10, y = 10 }
+player.speed = { x = 20, y = 20 }
 player.vel = { x = 10, y = 0}
 
 function player.draw()
@@ -16,8 +16,8 @@ function player.update(dt)
     player.x = player.x + player.vel.x * dt
     player.y = player.y + player.vel.y * dt
 
-    player.vel.x = player.vel.x * math.pow(0.002,dt)
-    player.vel.y = player.vel.y * math.pow(0.002,dt)
+    player.vel.x = player.vel.x * math.pow(0.02,dt)
+    player.vel.y = player.vel.y * math.pow(0.02,dt)
 end
 
 function player.apply_force(x,y)
