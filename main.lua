@@ -39,12 +39,23 @@ end
 
 function love.update(dt)
 	player.controls()
-	player.apply_force(0,20) --gravity
+	player.apply_force(0,10) --gravity
 	player.update(dt)
+
+	local smooth = 0.08
+
+    camera.x = math.floor((camera.x - (camera.x - (player.x - love.graphics.getWidth() / 2 * camera.scaleX)) * smooth))
+    camera.y = math.floor((camera.y - (camera.y - (player.y - love.graphics.getHeight() / 2 * camera.scaleY)) * smooth))
 
 	local manifest = Collider.process()
 	if #manifest ~= 0 then
-		Collider.resolve(manifest)
+		local force, correction = Collider.resolve(manifest)
+		player.x = player.x + correction.x
+		player.y = player.y + correction.y
+
+		player.vel.x = player.vel.x + force.x
+		player.vel.y = player.vel.y + force.y
+
 	else
 		-- no collisions were detected
 	end 

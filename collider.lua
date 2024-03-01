@@ -1,3 +1,28 @@
+function tprint (tbl, indent)
+  if not indent then indent = 0 end
+  local toprint = string.rep(" ", indent) .. "{\r\n"
+  indent = indent + 2 
+  for k, v in pairs(tbl) do
+    toprint = toprint .. string.rep(" ", indent)
+    if (type(k) == "number") then
+      toprint = toprint .. "[" .. k .. "] = "
+    elseif (type(k) == "string") then
+      toprint = toprint  .. k ..  "= "   
+    end
+    if (type(v) == "number") then
+      toprint = toprint .. v .. ",\r\n"
+    elseif (type(v) == "string") then
+      toprint = toprint .. "\"" .. v .. "\",\r\n"
+    elseif (type(v) == "table") then
+      toprint = toprint .. tprint(v, indent + 2) .. ",\r\n"
+    else
+      toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
+    end
+  end
+  toprint = toprint .. string.rep(" ", indent-2) .. "}"
+  return toprint
+end
+
 
 local Collider = {}
 
@@ -20,6 +45,9 @@ function broad_phase(A,B)
 	end
 end
 
+function getSide(l1x,l1y, l2x,l2y, cx,cy)
+  return ((l2x - l1x)*(cy - l1y) - (l2y - l1y)*(cx - l1x) ) > 0;
+end
 
 -- Frisch von ChatGPT <- FUNKTIONIERT NICHT RICHTIG
 function circleLineIntersect(cx, cy, r, x1, y1, x2, y2)
@@ -55,9 +83,25 @@ function circleLineIntersect(cx, cy, r, x1, y1, x2, y2)
     local distance = math.sqrt((cx - closestX)^2 + (cy - closestY)^2) - r
 
     if distance <= r then
+    	local pendepth = r - distance 
+    	local normal = {x = 0, y = 0}
         -- TODO: Calculate the collision normal
         -- Return the collision normal
-        return true, {x = (cx - closestX) / distance, y = (cy - closestY) / distance}, r - distance
+        if not getSide(x1,y1,x2,y2,cx,cy) then
+        	pendepth = pendepth
+        else
+        	pendepth = -pendepth
+        end
+
+        normal.x = (cx - closestX)
+        normal.y = (cy - closestY)
+
+        local len = math.sqrt(normal.x*normal.x + normal.y*normal.y)
+
+        normal.x = normal.x / len
+        normal.y = normal.y / len
+        
+        return true, normal, pendepth
     end
 
     return false, nil, 0  -- No intersection
@@ -101,22 +145,24 @@ Collider.process = function()
 end
 
 Collider.resolve = function(manifest)
+	local force = {x = 0, y = 0}
+	local correction = {x = 0, y = 0}
 	for i,col in ipairs(manifest) do
-		print(i .. ": normal = x: " .. col.normal.x .. "; y: " .. col.normal.y)
+		--print(i .. ": normal = x: " .. col.normal.x .. "; y: " .. col.normal.y .. "; depth: " .. col.pendepth)
 
 		if col.A.type == Collider.ObjType.dynamic and col.B.orig ~= nil and col.B.orig.type == Collider.ObjType.static then
 			local damp = 0.6
-			local slop = 0.001
-			local correction = {}
+			local slop = 1
 
-		    correction.x = math.min(col.pendepth + slop, 0.0) / 2 * damp * col.normal.x;
-		    correction.y = math.min(col.pendepth + slop, 0.0) / 2 * damp * col.normal.y;
 
-			col.A.data.apply_force(col.normal.x * damp * col.pendepth,col.normal.y * damp * col.pendepth)
-			col.A.data.x = col.A.data.x - correction.x
-			col.A.data.y = col.A.data.y - correction.y
+	    force.x = force.x + col.normal.x * damp * col.pendepth
+	    force.y = force.y + col.normal.y * damp * col.pendepth
+		else
+			print("STUB! NOT IMPLEMENTED")
 		end
 	end
+
+	return force, correction
 end
 
 return Collider

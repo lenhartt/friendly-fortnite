@@ -1,10 +1,11 @@
 local player = {}
+local Collider = require("collider");
 
 player.x = 200
 player.y = -100
 player.radius = 5
 
-player.speed = { x = 20, y = 20 }
+player.speed = { x = 30, y = 30 }
 player.vel = { x = 10, y = 0}
 
 function player.draw()
@@ -13,11 +14,12 @@ function player.draw()
 end
 
 function player.update(dt)
+    --Collider.move(player,player.vel.x * dt,player.vel.y * dt)
     player.x = player.x + player.vel.x * dt
     player.y = player.y + player.vel.y * dt
 
-    player.vel.x = player.vel.x * math.pow(0.02,dt)
-    player.vel.y = player.vel.y * math.pow(0.02,dt)
+    player.vel.x = player.vel.x * math.pow(0.2,dt)
+    player.vel.y = player.vel.y * math.pow(0.2,dt)
 end
 
 function player.apply_force(x,y)
